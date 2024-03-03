@@ -1,56 +1,55 @@
 const mongoose = require('mongoose');
 
-const HospitalSchema = new mongoose.Schema({
+const CoworkingSpaceSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Please add a name'],
         unique: true,
         trim: true,
-        maxlength: [50, 'Name can not be more than 50 characters']
+        maxlength: [100, 'Name can not be more than 100 characters']
     },
+
     address: {
         type: String,
-        required: [true, 'Please add an address'],
+        required: [true, 'Please add an address']
     },
-    district: {
-        type: String,
-        required: [true, 'Please add a district'],
-    }, 
-    province: {
-        type: String,
-        required: [true, 'Please add a province'],
-    },
-    postalcode: {
-        type: String,
-        required: [true, 'Please add a postalcode'],
-        maxlength: [5, 'Postal Code can not be more than 5 digits']
-    },
+
     tel: {
-        type: String
-    },
-    region: {
         type: String,
-        require: [true, 'Please add a region']
+        required: [true, 'Please add a telephone number'],
+        unique: true,
+    },
+
+    time: {
+        type: Date,
+        required: [true, 'Please add an open-close time']
     }
 },
-{
-    toJSON: {virtuals: true},
-    toObject: {virtuals: true}
-});
+    {
+        toJSON: {virtuals: true},
+        toObject: {virtuals: true}
+    });
 
-//Cascade delete appointments when a hospital is deleted
-HospitalSchema.pre('deleteOne', {document: true, query: false}, async function(next) {
-    console.log(`Appointments being removed from hospital ${this._id}`);
-    await this.model('Appointment').deleteMany({hospital: this._id});
-    next();
-})
+    CoworkingSpaceSchema.pre('deleteOne', {document: true, query: false}, async function(next) {
+        console.log(`Reservations being removed from Co-working space ${this._id}`);
+        await this.model('Reservation').deleteMany({coWorking: this._id});
+        next();
+    });
 
-//Reverse populate with virtuals
-HospitalSchema.virtual('appointments', {
-    ref: 'Appointment',
+    // Reverse populate with virtuals
+    CoworkingSpaceSchema.virtual('reservations', {
+    ref: 'Reservation',
     localField: '_id',
-    foreignField: 'hospital',
+    foreignField: 'coworkingSpace',
     justOne: false
 });
 
-module.exports = mongoose.model('Hospital', HospitalSchema);
+module.exports = mongoose.model('CoworkingSpace', CoworkingSpaceSchema);
+
+/* 
+# changed code lists
+- changed hospital to coworking & appointment to reservation
+- adjust maxlength of name
+- add time
+- delete some fields
+*/

@@ -3,11 +3,20 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
-    name:{
+    name: {
         type: String,
-        required: [true, 'Please add a name']
+        required: [true,'Please add a name']
     },
-    email:{
+    tel: {
+        type: String,
+        required: [true, 'Please add a telephone number'],
+        unique: true,
+        match: [
+            /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/, 
+            'Please add a valid telephone number'
+        ]
+    },
+    email: {
         type: String,
         required: [true, 'Please add an email'],
         unique: true,
@@ -16,7 +25,7 @@ const UserSchema = new mongoose.Schema({
             'Please add a valid email'
         ]
     },
-    role:{
+    role: {
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
@@ -29,27 +38,30 @@ const UserSchema = new mongoose.Schema({
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
-    createAt: {
+    createdAt: {
         type: Date,
         default: Date.now
     }
 });
 
-//Encrypt password using bcrypt
+// Encrypt password using bcrypt
 UserSchema.pre('save', async function(next) {
-    const salt=await bcrypt.genSalt(10);
-    this.password=await bcrypt.hash(this.password, salt);
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt)
 });
 
-//Sign JWT and return
-UserSchema.methods.getSignedJwtToken=function() {
-    return jwt.sign({id:this._id}, process.env.JWT_SECRET, {
+// Sign JWT and return
+UserSchema.methods.getSignedJwtToken = function() {
+    return jwt.sign({id: this._id}, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE
     });
 }
 
-UserSchema.methods.matchPassword=async function(enteredPassword){
+// Match user entered password to hashed password in database
+UserSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 }
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('User',UserSchema);
+
+// changed some sentences and add telephone number

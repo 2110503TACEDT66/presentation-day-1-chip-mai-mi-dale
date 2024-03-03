@@ -1,18 +1,19 @@
 const mongoose = require('mongoose');
 
-const AppointmentSchema=new mongoose.Schema({
-    apptDate:{
+const ReservationSchema = new mongoose.Schema({
+    resDate: {
         type: Date,
-        required: true
+        required: true 
+        // in range of co-open time - co-close time***
     },
-    user:{
+    user: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: true
     },
-    hospital:{
-        type:mongoose.Schema.ObjectId,
-        ref:'Hospital',
+    coworkingSpace: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'CoworkingSpace',
         required: true
     },
     createdAt: {
@@ -21,4 +22,9 @@ const AppointmentSchema=new mongoose.Schema({
     }
 });
 
-module.exports=mongoose.model('Appointment', AppointmentSchema);
+module.exports = mongoose.model('Reservation', ReservationSchema);
+
+/* 
+# changed code lists
+- changed hospital to coworkingSpace & appointment to reservation
+*/
