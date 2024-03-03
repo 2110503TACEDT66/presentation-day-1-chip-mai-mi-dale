@@ -1,9 +1,9 @@
-const Hospital = require('../models/CoworkingSpace')
+const CoworkingSpace = require('../models/CoworkingSpace')
 
-//@desc     Get all hospitals
-//@route    GET /api/v1/hospitals
+//@desc     Get all coworkingSpaces
+//@route    GET /api/v1/coworkingSpaces
 //@access   Public
-exports.getHospitals= async (req,res,next) => {
+exports.getCoworkingSpaces= async (req,res,next) => {
     let query;
 
     //Copy req.query
@@ -21,7 +21,7 @@ exports.getHospitals= async (req,res,next) => {
     queryStr=queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
     //finding resource
-    query = Hospital.find(JSON.parse(queryStr)).populate('appointments');
+    query = CoworkingSpace.find(JSON.parse(queryStr)).populate('reservations');
 
     //Select Fields
     if(req.query.select) {
@@ -43,11 +43,11 @@ exports.getHospitals= async (req,res,next) => {
     const endIndex=page*limit;
 
     try{
-        const total=await Hospital.countDocuments();
+        const total=await CoworkingSpace.countDocuments();
         query = query.skip(startIndex).limit(limit);
         
         //Executing query
-        const hospitals = await query;
+        const coworkingSpaces = await query;
 
         const pagination = {};
 
@@ -67,75 +67,75 @@ exports.getHospitals= async (req,res,next) => {
     
         res.status(200).json({
             success:true, 
-            count:hospitals.length,
+            count:coworkingSpaces.length,
             pagination,
-            data:hospitals
+            data:coworkingSpaces
         });
     } catch (err) {
         res.status(400).json({success:false});
     }
 };
 
-//@desc     Get single hospital
-//@route    GET /api/v1/hospitals/:id
+//@desc     Get single co-working space
+//@route    GET /api/v1/coworkingSpaces/:id
 //@access   Public
-exports.getHospital= async (req,res,next) => {
+exports.getCoworkingSpace= async (req,res,next) => {
     try{
-        const hospital = await Hospital.findById(req.params.id);
+        const coworkingSpace = await CoworkingSpace.findById(req.params.id);
 
-        if(!hospital){
+        if(!coworkingSpace){
             return res.status(400).json({success:false});
         }
 
-        res.status(200).json({success:true,data:hospital});
+        res.status(200).json({success:true,data:coworkingSpace});
     } catch (err) {
         res.status(400).json({success:false});
     }
 };
 
-//@desc     Create a hospital
-//@route    POST /api/v1/hospitals
+//@desc     Create a co-working space
+//@route    POST /api/v1/coworkingSpaces
 //@access   Private
-exports.createtHospital= async (req,res,next) => {
-    const hospital = await Hospital.create(req.body);
+exports.createCoworkingSpace= async (req,res,next) => {
+    const coworkingSpace = await CoworkingSpace.create(req.body);
     res.status(201).json({
         success:true, 
-        data: hospital
+        data: coworkingSpace
     });
 };
 
-//@desc     Update single hospital
-//@route    PUT /api/v1/hospitals/:id
+//@desc     Update single co-working space
+//@route    PUT /api/v1/coworkingSpaces/:id
 //@access   Private
-exports.updateHospital= async(req,res,next) => {
+exports.updateCoworkingSpace= async(req,res,next) => {
     try{
-        const hospital = await Hospital.findByIdAndUpdate(req.params.id, req.body, {
+        const coworkingSpace = await CoworkingSpace.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         });
         
-        if(!hospital){
+        if(!coworkingSpace){
             return res.status(400).json({success:false});
         }
 
-        res.status(200).json({success:true, data:hospital});
+        res.status(200).json({success:true, data:coworkingSpace});
     } catch (err) {
         res.status(400).json({success:false});
     }
 };
 
-//@desc     Delete single hospital
-//@route    DELETE /api/v1/hospitals/:id
+//@desc     Delete single co-working space
+//@route    DELETE /api/v1/coworkingSpaces/:id
 //@access   Private
-exports.deleteHospital= async(req,res,next) => {
+exports.deleteCoworkingSpace= async(req,res,next) => {
     try{
-        const hospital = await Hospital.findById(req.params.id);
+        const coworkingSpace = await CoworkingSpace.findById(req.params.id);
 
-        if(!hospital){
+        if(!coworkingSpace){
             return res.status(400).json({success:false, message:`Bootcamp not found with id of ${req.params.id}`});
         }
 
-        await hospital.deleteOne();
+        await coworkingSpace.deleteOne();
         res.status(200).json({success:true, data: {}});
     } catch (err) {
         res.status(400).json({success:false});
