@@ -1,16 +1,16 @@
-const Appointment = require('../models/Reservation');
-const Hospital = require('../models/CoworkingSpace');
+const Reservation = require('../models/Reservation');
+const CoworkingSpace = require('../models/CoworkingSpace');
 
-//@desc     Get all appointments
-//@route    GET /api/v1/appointments
+//@desc     Get all Reservations
+//@route    GET /api/v1/Reservations
 //@access   Public
-exports.getAppointments = async (req,res,next)=>{
+exports.getReservations = async (req,res,next)=>{
     let query;
 
     //General users can see only their appointments
     if(req.user.role !== 'admin'){
-        query=Appointment.find({user: req.user.id}).populate({
-            path:'hospital',
+        query=Reservation.find({user: req.user.id}).populate({
+            path:'reservation',
             select: 'name province tel'
         });
     }else { //admin
