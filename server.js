@@ -21,6 +21,7 @@ connectDB();
 //Route files
 const coworkingSpaces = require('./routes/coworkingSpaces');
 const reservations = require('./routes/reservations');
+const rooms = require('./routes/rooms');
 const auth = require('./routes/auth');
 
 const app = express();
@@ -76,6 +77,7 @@ app.use(cors());
 //Mount routers
 app.use('/api/v1/coworkingSpaces', coworkingSpaces);
 app.use('/api/v1/reservations', reservations);
+app.use('/api/v1/rooms', rooms);
 app.use('/api/v1/auth', auth);
 
 const PORT=process.env.PORT || 5000;
