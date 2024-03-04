@@ -21,7 +21,7 @@ exports.getReservations = async (req, res, next) => {
       })
       .populate({
         path: "coworkingspace",
-        select: "name address tel -_id",
+        select: "name address tel",
       });
   } else {
     //admin
@@ -40,7 +40,7 @@ exports.getReservations = async (req, res, next) => {
         })
         .populate({
           path: "coworkingspace",
-          select: "name address tel -_id",
+          select: "name address tel",
         });
     } else {
       query = Reservation.find()
@@ -54,7 +54,7 @@ exports.getReservations = async (req, res, next) => {
         })
         .populate({
           path: "coworkingspace",
-          select: "name address tel -_id",
+          select: "name address tel",
         });
     }
   }
@@ -92,7 +92,7 @@ exports.getReservation = async (req, res, next) => {
       })
       .populate({
         path: "coworkingspace",
-        select: "name address tel -_id",
+        select: "name address tel",
       });
 
     if (!reservation) {
@@ -115,7 +115,7 @@ exports.getReservation = async (req, res, next) => {
 };
 
 //@desc     Add reservation
-//@route    POST /api/v1/coworking/:coworkingId/reservation
+//@route    POST /api/v1/coworking/:coworkingId/reservations
 //@access   Private
 exports.addReservation = async (req, res, next) => {
   try {
@@ -132,14 +132,50 @@ exports.addReservation = async (req, res, next) => {
       });
     }
 
-    // const room = await CoworkingSpace.findById(req.body.room);
+    // const splitTimeS = coworkingSpace.opentime.split(":"); // Splits the opentime string into ["09", "30"]
+    // const openH = parseInt(splitTimeS[0]); // Parses the hours part into an integer: 9
+    // const openM = parseInt(splitTimeS[1]);
 
-    // if (!room) {
-    //   return res.status(404).json({
+    // const splitTimeE = coworkingSpace.closetime.split(":"); // Splits the closetime string into ["18", "00"]
+    // const closeH = parseInt(splitTimeE[0]); // Parses the hours part into an integer: 18
+    // const closeM = parseInt(splitTimeE[1]);
+
+    // const startH = new Date(req.body.startdate).getHours();
+    // const startM = new Date(req.body.startdate).getMinutes();
+    // const endH = new Date(req.body.enddate).getHours();
+    // const endM = new Date(req.body.enddate).getMinutes();
+    // const [openH, openM] = coworkingSpace.opentime.split(':').map(num => parseInt(num));
+    // const [closeH, closeM] = coworkingSpace.closetime.split(':').map(num => parseInt(num));
+    //Check Time
+    // if (startH < openH) {
+    //   return res.status(400).json({
     //     success: false,
-    //     message: `No room id: ${req.body.room} in Coworking id: ${req.params.coworkingId}`,
+    //     message: `Unavailable time`,
     //   });
     // }
+
+    // if (endH > closeH) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: `Unavailable time`,
+    //   });
+    // }
+
+    const room = await Room.findById(req.body.room);
+
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: `No room id: ${req.body.room} in Coworking id: ${req.params.coworkingId}`,
+      });
+    }
+
+    if (room.capacity < req.body.people) {
+      return res.status(400).json({
+        success: false,
+        message: `Have many people more than ${room.capacity}`,
+      });
+    }
 
     //add user Id to req.body
     req.body.user = req.user.id;
