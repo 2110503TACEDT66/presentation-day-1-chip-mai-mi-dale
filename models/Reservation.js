@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const ReservationSchema = new mongoose.Schema({
+
   startdate: {
     type: Date,
     required: true,
@@ -19,7 +20,7 @@ const ReservationSchema = new mongoose.Schema({
     ref: "Room",
     required: true,
   },
-  coworking: {
+  coworkingspace: {
     type: mongoose.Schema.ObjectId,
     ref: "CoworkingSpace",
     required: true,
@@ -30,4 +31,9 @@ const ReservationSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Reservation", ReservationSchema);
+module.exports = mongoose.model('Reservation', ReservationSchema);
+
+/* 
+# changed code lists
+- changed hospital to coworkingSpace & appointment to reservation
+*/
