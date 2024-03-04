@@ -131,6 +131,23 @@ exports.addReservation = async (req, res, next) => {
         message: `No coworking with the id of ${req.params.coworkingSpaceId}`,
       });
     }
+    
+    
+    const room = await Room.findById(req.body.room);
+    
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: `No room id: ${req.body.room} in Coworking id: ${req.params.coworkingSpaceId}`,
+      });
+    }
+    
+    if (room.capacity < req.body.people) {
+      return res.status(400).json({
+        success: false,
+        message: `Have many people more than ${room.capacity}`,
+      });
+    }
 
     // const splitTimeS = coworkingSpace.opentime.split(":"); // Splits the opentime string into ["09", "30"]
     // const openH = parseInt(splitTimeS[0]); // Parses the hours part into an integer: 9
@@ -146,7 +163,7 @@ exports.addReservation = async (req, res, next) => {
     // const endM = new Date(req.body.enddate).getMinutes();
     // const [openH, openM] = coworkingSpace.opentime.split(':').map(num => parseInt(num));
     // const [closeH, closeM] = coworkingSpace.closetime.split(':').map(num => parseInt(num));
-    //Check Time
+    // Check Time
     // if (startH < openH) {
     //   return res.status(400).json({
     //     success: false,
@@ -160,23 +177,7 @@ exports.addReservation = async (req, res, next) => {
     //     message: `Unavailable time`,
     //   });
     // }
-
-    const room = await Room.findById(req.body.room);
-
-    if (!room) {
-      return res.status(404).json({
-        success: false,
-        message: `No room id: ${req.body.room} in Coworking id: ${req.params.coworkingId}`,
-      });
-    }
-
-    if (room.capacity < req.body.people) {
-      return res.status(400).json({
-        success: false,
-        message: `Have many people more than ${room.capacity}`,
-      });
-    }
-
+    
     //add user Id to req.body
     req.body.user = req.user.id;
     //Check for existed reservation
@@ -226,6 +227,22 @@ exports.updateReservation = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: `User ${req.user.id} is not authorized to update this reservation`,
+      });
+    }
+
+    const room = await Room.findById(req.body.room);
+    
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: `No room id: ${req.body.room} in this Coworking`,
+      });
+    }
+    
+    if (room.capacity < req.body.people) {
+      return res.status(400).json({
+        success: false,
+        message: `Have many people more than ${room.capacity}`,
       });
     }
 
