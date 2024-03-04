@@ -118,16 +118,16 @@ exports.addReservation = async (req, res, next) => {
       });
     }
 
-    const room = await CoworkingSpace.findById(req.body.room);
+    // const room = await CoworkingSpace.findById(req.body.room);
 
-    if (!room) {
-      return res.status(404).json({
-        success: false,
-        message: `No room id: ${req.body.room} in Coworking id: ${req.params.coworkingId}`,
-      });
-    }
+    // if (!room) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: `No room id: ${req.body.room} in Coworking id: ${req.params.coworkingId}`,
+    //   });
+    // }
 
-    //add user Id to req.body
+    //add user Id to req.brsody
     req.body.user = req.user.id;
     //Check for existed reservation
     const existedReservations = await Reservation.find({ user: req.user.id });
