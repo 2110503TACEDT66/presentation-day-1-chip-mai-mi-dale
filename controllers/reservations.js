@@ -6,49 +6,50 @@ const CoworkingSpace = require("../models/CoworkingSpace");
 //@route    GET /api/v1/Reservations
 //@access   Public
 exports.getReservations = async (req, res, next) => {
-  // let query;
+  let query;
 
-  // //General users can see only their reservations
-  // if (req.user.role !== "admin") {
-  //   query = Reservation.find({ user: req.user.id }).populate(
-  //     {
-  //       path: "coworking",
-  //       //   select: "name address tel",
-  //     },
-  //     {
-  //       path: "room",
-  //       //   select: "name address tel",
-  //     }
-  //   );
-  // } else {
-  //   //admin
-  //   if (req.params.coworkingId) {
-  //     console.log(req.params.coworkingId);
-  //     query = Reservation.find({
-  //       coworking: req.params.coworkingId,
-  //     }).populate(
-  //       {
-  //         path: "coworking",
-  //         //   select: "name address tel",
-  //       },
-  //       {
-  //         path: "room",
-  //         //   select: "name address tel",
-  //       }
-  //     );
-  //   } else {
-  //     query = Reservation.find().populate(
-  //       {
-  //         path: "coworking",
-  //         //   select: "name address tel",
-  //       },
-  //       {
-  //         path: "room",
-  //         //   select: "name address tel",
-  //       }
-  //     );
-  //   }
-  // }
+  // console.log(req.body.user);
+  console.log(req.user.role);
+  
+  //General users can see only their reservations
+  if (req.user.role !== "admin") {
+    query = Reservation.find({ user: req.user.id })
+      .populate({
+        path: "coworkingspace",
+        select: "name address tel",
+      })
+      .populate({
+        path: "room",
+        select: "name address tel",
+      });
+  } else {
+    //admin
+    if (req.params.coworkingId) {
+      console.log(req.params.coworkingId);
+
+      query = Reservation.find({
+        coworkingspace: req.params.coworkingId,
+      })
+        .populate({
+          path: "coworkingspace",
+          select: "name address tel",
+        })
+        .populate({
+          path: "room",
+          select: "name address tel",
+        });
+    } else {
+      query = Reservation.find()
+        .populate({
+          path: "coworkingspace",
+          select: "name address tel",
+        })
+        .populate({
+          path: "room",
+          select: "name address tel",
+        });
+    }
+  }
 
   try {
     const reservations = await Reservation.find();
@@ -127,7 +128,7 @@ exports.addReservation = async (req, res, next) => {
     //   });
     // }
 
-    //add user Id to req.brsody
+    //add user Id to req.body
     req.body.user = req.user.id;
     //Check for existed reservation
     const existedReservations = await Reservation.find({ user: req.user.id });
