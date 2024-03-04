@@ -37,6 +37,12 @@ const {getCoworkingSpace, getCoworkingSpaces, createCoworkingSpace, updateCowork
  *         tel:
  *           type: string
  *           description: Telephone number
+ *         open-time:
+ *           type: string
+ *           description: CoworkingSpace's open time
+ *         close-time:
+ *           type: string
+ *           description: CoworkingSpace's close time
  *       example:
  *         id: 609bda561452242d88d36e37
  *         ลําดับ: 121
@@ -46,6 +52,8 @@ const {getCoworkingSpace, getCoworkingSpaces, createCoworkingSpace, updateCowork
  *         province: กรุงเทพมหานคร
  *         postalcode: 10110
  *         tel: 02-2187000
+ *         open-time: 09:00
+ *         close-time: 00:00
  */
 
 /**
