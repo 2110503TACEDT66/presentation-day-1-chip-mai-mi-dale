@@ -41,7 +41,7 @@ RoomSchema.virtual("reservations", {
   ref: "Reservation",
   localField: "_id",
   foreignField: "room",
-//   justOne: false,
+  justOne: false,
 });
 
 module.exports = mongoose.model("Room", RoomSchema);
