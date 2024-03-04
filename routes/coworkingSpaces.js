@@ -184,12 +184,14 @@ const {getCoworkingSpace, getCoworkingSpaces, createCoworkingSpace, updateCowork
 
 //Include other resource routers
 const reservationsRouter = require('./reservations');
+const roomRouter = require('./rooms');
 
 const router = express.Router();
 const {protect, authorize} = require('../middleware/auth');
 
 //Re-route into other resource routers
 router.use('/:coworkingSpaceId/reservations/', reservationsRouter);
+router.use('/:coworkingSpaceId/rooms', roomRouter);
 
 router.route('/').get(getCoworkingSpaces).post(protect, authorize('admin'), createCoworkingSpace);
 router.route('/:id').get(getCoworkingSpace).put(protect, authorize('admin'), updateCoworkingSpace).delete(protect, authorize('admin'), deleteCoworkingSpace);
