@@ -1,4 +1,4 @@
-const Room = require('../models/CoworkingSpace')
+const Room = require('../models/Room')
 
 //@desc     Get all rooms
 //@route    GET /api/v1/rooms
