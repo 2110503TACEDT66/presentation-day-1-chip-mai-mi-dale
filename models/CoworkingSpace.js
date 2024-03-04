@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const CoworkingSpaceSchema = new mongoose.Schema({
     name: {
@@ -11,38 +11,27 @@ const CoworkingSpaceSchema = new mongoose.Schema({
 
     address: {
         type: String,
-        required: [true, 'Please add an address']
+        required: [true, 'Please add an address'],
     },
-
     tel: {
         type: String,
-        required: [true, 'Please add a telephone number'],
-        unique: true,
-    },
-
-    openTime: {
-        type: String,
-        required: [true, 'Please add open time']
-    },
-
-    closeTime: {
-        type: String,
-        required: [true, 'Please add close time']
+        required: [true, "Please add open time"],
     }
 },
-    {
-        toJSON: {virtuals: true},
-        toObject: {virtuals: true}
-    });
+{
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+});
 
-    CoworkingSpaceSchema.pre('deleteOne', {document: true, query: false}, async function(next) {
-        console.log(`Reservations being removed from Co-working space ${this._id}`);
-        await this.model('Reservation').deleteMany({coworkingSpace: this._id});
-        next();
-    });
+//Cascade delete appointments when a hospital is deleted
+CoworkingSpaceSchema.pre('deleteOne', {document: true, query: false}, async function(next) {
+    console.log(`Reservations being removed from Co-working space ${this._id}`);
+    await this.model('Room').deleteMany({coworkingSpace: this._id});
+    next();
+})
 
-    // Reverse populate with virtuals
-    CoworkingSpaceSchema.virtual('reservations', {
+//Reverse populate with virtuals
+CoworkingSpaceSchema.virtual('reservations', {
     ref: 'Reservation',
     localField: '_id',
     foreignField: 'coworkingSpace',
@@ -50,11 +39,3 @@ const CoworkingSpaceSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('CoworkingSpace', CoworkingSpaceSchema);
-
-/* 
-# changed code lists
-- changed hospital to coworking & appointment to reservation
-- adjust maxlength of name
-- add time
-- delete some fields
-*/
