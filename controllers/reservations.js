@@ -229,23 +229,7 @@ exports.updateReservation = async (req, res, next) => {
         message: `User ${req.user.id} is not authorized to update this reservation`,
       });
     }
-
-    const room = await Room.findById(req.body.room);
     
-    if (!room) {
-      return res.status(404).json({
-        success: false,
-        message: `No room id: ${req.body.room} in this Coworking`,
-      });
-    }
-    
-    if (room.capacity < req.body.people) {
-      return res.status(400).json({
-        success: false,
-        message: `Have many people more than ${room.capacity}`,
-      });
-    }
-
     reservation = await Reservation.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
