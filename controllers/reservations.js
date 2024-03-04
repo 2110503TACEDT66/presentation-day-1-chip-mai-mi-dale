@@ -12,39 +12,40 @@ exports.getReservations = async (req, res, next) => {
   if (req.user.role !== "admin") {
     query = Reservation.find({ user: req.user.id }).populate(
       {
-        path: "coworking",
-        //   select: "name address tel",
-      },
+        path: "coworkingspace",
+        select: "name address tel",
+      }
+    ).populate(
       {
         path: "room",
-        //   select: "name address tel",
+        select: "name address tel",
       }
     );
   } else {
     //admin
-    if (req.params.coworkingId) {
-      console.log(req.params.coworkingId);
+    if (req.params.coworkingSpaceId) {
+      console.log(req.params.coworkingSpaceId);
       query = Reservation.find({
-        coworking: req.params.coworkingId,
+        coworkingSpace: req.params.coworkingSpaceId,
       }).populate(
         {
-          path: "coworking",
-          //   select: "name address tel",
+          path: "coworkingspace",
+          select: "name address tel",
         },
         {
           path: "room",
-          //   select: "name address tel",
+          select: "name address tel",
         }
       );
     } else {
       query = Reservation.find().populate(
         {
-          path: "coworking",
-          //   select: "name address tel",
+          path: "coworkingspace",
+          select: "name address tel",
         },
         {
           path: "room",
-          //   select: "name address tel",
+          select: "name address tel",
         }
       );
     }
@@ -74,12 +75,12 @@ exports.getReservation = async (req, res, next) => {
     //note : want to show username and room
     const reservation = await Reservation.findById(req.params.id).populate(
       {
-        path: "coworking",
-        //   select: "name description tel",
+        path: "coworkingspace",
+        select: "name description tel",
       },
       {
         path: "room",
-        //   select: "name address tel",
+        select: "name address tel",
       }
     );
 
@@ -107,14 +108,14 @@ exports.getReservation = async (req, res, next) => {
 //@access   Private
 exports.addReservation = async (req, res, next) => {
   try {
-    req.body.coworking = req.params.coworkingId;
+    req.body.coworkingSpace = req.params.coworkingSpaceId;
 
-    const coworking = await CoworkingSpace.findById(req.params.coworkingId);
+    const coworkingSpace = await CoworkingSpace.findById(req.params.coworkingSpaceId);
 
-    if (!coworking) {
+    if (!coworkingSpace) {
       return res.status(404).json({
         success: false,
-        message: `No coworking with the id of ${req.params.coworkingId}`,
+        message: `No coworking with the id of ${req.params.coworkingSpaceId}`,
       });
     }
 
