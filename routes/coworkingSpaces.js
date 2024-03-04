@@ -1,11 +1,11 @@
 const express = require('express');
-const {getHospitals, getHospital, createHospital, updateHospital, deleteHospital, getVacCenters} = require('../controllers/coworkingSpaces');
+const {getCoworkingSpace, getCoworkingSpaces, createCoworkingSpace, updateCoworkingSpace, deleteCoworkingSpace} = require('../controllers/coworkingSpaces');
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     Hospital:
+ *     CoworkingSpace:
  *       type: object
  *       required:
  *         - name
@@ -14,14 +14,14 @@ const {getHospitals, getHospital, createHospital, updateHospital, deleteHospital
  *         id:
  *           type: string
  *           format: uuid
- *           description: The auto-generated id of the hospital
+ *           description: The auto-generated id of the co-working space
  *           example: d290f1ee-6c54-4b01-90e6-d701748f0851
  *         ลําดับ:
  *           type: string
  *           description: Ordinal number
  *         name:
  *           type: string
- *           description: Hospital name
+ *           description: CoworkingSpace name
  *         address:
  *           type: string
  *           description: House No., Street, Road
@@ -37,158 +37,161 @@ const {getHospitals, getHospital, createHospital, updateHospital, deleteHospital
  *         tel:
  *           type: string
  *           description: Telephone number
- *         region:
+ *         openTime:
  *           type: string
- *           description: Region
+ *           description: CoworkingSpace's open time
+ *         closeTime:
+ *           type: string
+ *           description: CoworkingSpace's close time
  *       example:
  *         id: 609bda561452242d88d36e37
  *         ลําดับ: 121
- *         name: Happy Hospital
+ *         name: Happy Co-workingSpace
  *         address: 121 ถ.สุขุมวิท
  *         district: บางนา
  *         province: กรุงเทพมหานคร
  *         postalcode: 10110
  *         tel: 02-2187000
- *         region: กรุงเทพมหานคร (Bangkok)
+ *         open-time: 09:00
+ *         close-time: 00:00
  */
 
 /**
  * @swagger
  * tags:
- *   name: Hospitals
- *   description: The hospitals managing API
+ *   name: CoworkingSpaces
+ *   description: The coworkingSpaces managing API
  */
 
 /**
  * @swagger
- * /hospitals:
+ * /coworkingSpaces:
  *   get:
- *     summary: Return the list of all the hospitals
- *     tags: [Hospitals]
+ *     summary: Return the list of all the coworkingSpaces
+ *     tags: [CoworkingSpaces]
  *     responses:
  *       200:
- *         description: The list of all the hospitals
+ *         description: The list of all the coworkingSpaces
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Hospital'
+ *                 $ref: '#/components/schemas/CoworkingSpace'
  */
 
 /**
  * @swagger
- * /hospitals/{id}:
+ * /coworkingSpaces/{id}:
  *   get:
- *     summary: Get the hospital by id
- *     tags: [Hospitals]
+ *     summary: Get the coworkingSpace by id
+ *     tags: [CoworkingSpaces]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The hospital id
+ *         description: The coworkingSpace id
  *     responses:
  *       200:
- *         description: The hospital description by id
+ *         description: The coworkingSpace description by id
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Hospital'
+ *                 $ref: '#/components/schemas/CoworkingSpace'
  *       404:
- *         description: The hospital was not found
+ *         description: The coworkingSpace was not found
  */
 
 /**
  * @swagger
- * /hospitals:
+ * /coworkingSpaces:
  *   post:
- *     summary: Create a new hospital
- *     tags: [Hospitals]
+ *     summary: Create a new coworkingSpace
+ *     tags: [CoworkingSpaces]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Hospital'
+ *             $ref: '#/components/schemas/CoworkingSpace'
  *     responses:
  *       201:
- *         description: The hospital was successfully created
+ *         description: The coworkingSpace was successfully created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Hospital'
+ *               $ref: '#/components/schemas/CoworkingSpace'
  *       500:
  *         description: Some server error
  */
 
 /**
  * @swagger
- * /hospitals/{id}:
+ * /coworkingSpaces/{id}:
  *   put:
- *     summary: Update the hospital by the id
- *     tags: [Hospitals]
+ *     summary: Update the coworkingSpace by the id
+ *     tags: [CoworkingSpaces]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The hospital id
+ *         description: The coworkingSpace id
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Hospital'
+ *             $ref: '#/components/schemas/CoworkingSpace'
  *     responses:
  *       200:
- *         description: The hospital was updated
+ *         description: The coworkingSpace was updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Hospital'
+ *               $ref: '#/components/schemas/CoworkingSpace'
  *       404:
- *         description: The hospital was not found
+ *         description: The coworkingSpace was not found
  *       500:
  *         description: Some error happened
  */
 
 /**
  * @swagger
- * /hospitals/{id}:
+ * /coworkingSpaces/{id}:
  *   delete:
- *     summary: Remove the hospital by the id
- *     tags: [Hospitals]
+ *     summary: Remove the coworkingSpace by the id
+ *     tags: [CoworkingSpaces]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: The hospital id
+ *         description: The coworkingSpace id
  *     
  *     responses:
  *       200:
- *         description: The hospital was deleted
+ *         description: The coworkingSpace was deleted
  *       404:
- *         description: The hospital was not found
+ *         description: The coworkingSpace was not found
  */
 
 //Include other resource routers
-const appointmentsRouter = require('./appointments');
+const reservationsRouter = require('./reservations');
 
 const router = express.Router();
 const {protect, authorize} = require('../middleware/auth');
 
 //Re-route into other resource routers
-router.use('/:hospitalId/appointments/', appointmentsRouter);
+router.use('/:coworkingSpaceId/reservations/', reservationsRouter);
 
-router.route('/').get(getHospitals).post(protect, authorize('admin'), createHospital);
-router.route('/vacCenters').get(getVacCenters);
-router.route('/:id').get(getHospital).put(protect, authorize('admin'), updateHospital).delete(protect, authorize('admin'), deleteHospital);
+router.route('/').get(getCoworkingSpaces).post(protect, authorize('admin'), createCoworkingSpace);
+router.route('/:id').get(getCoworkingSpace).put(protect, authorize('admin'), updateCoworkingSpace).delete(protect, authorize('admin'), deleteCoworkingSpace);
 
 module.exports=router;
