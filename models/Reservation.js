@@ -29,7 +29,27 @@ const ReservationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+},
+{
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+
 });
+
+ReservationSchema.virtual("coworkingSpace", {
+  ref: "CoworkingSpace",
+  localField: "_id",
+  foreignField: "reservation",
+  //justOne: false
+});
+
+//Room populate with virtuals
+// ReservationSchema.virtual("room", {
+//   ref: "Room",
+//   localField: "_id",
+//   foreignField: "reservation",
+//   //justOne: false,
+// });
 
 module.exports = mongoose.model('Reservation', ReservationSchema);
 
