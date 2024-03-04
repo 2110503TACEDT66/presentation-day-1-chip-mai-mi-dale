@@ -20,9 +20,14 @@ const CoworkingSpaceSchema = new mongoose.Schema({
         unique: true,
     },
 
-    time: {
-        type: Date,
-        required: [true, 'Please add an open-close time']
+    openTime: {
+        type: String,
+        required: [true, 'Please add open time']
+    },
+
+    closeTime: {
+        type: String,
+        required: [true, 'Please add close time']
     }
 },
     {

@@ -1,5 +1,5 @@
 const express = require('express');
-const {getHospitals, getHospital, createtHospital, updateHospital, deleteHospital, getVacCenters} = require('../controllers/coworkingSpaces');
+const {getHospitals, getHospital, createHospital, updateHospital, deleteHospital, getVacCenters} = require('../controllers/coworkingSpaces');
 
 /**
  * @swagger
@@ -187,7 +187,7 @@ const {protect, authorize} = require('../middleware/auth');
 //Re-route into other resource routers
 router.use('/:hospitalId/appointments/', appointmentsRouter);
 
-router.route('/').get(getHospitals).post(protect, authorize('admin'), createtHospital);
+router.route('/').get(getHospitals).post(protect, authorize('admin'), createHospital);
 router.route('/vacCenters').get(getVacCenters);
 router.route('/:id').get(getHospital).put(protect, authorize('admin'), updateHospital).delete(protect, authorize('admin'), deleteHospital);
 

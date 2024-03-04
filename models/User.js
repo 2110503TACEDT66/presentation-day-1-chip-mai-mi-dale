@@ -3,19 +3,18 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
+    
     name: {
         type: String,
         required: [true,'Please add a name']
     },
+
     tel: {
         type: String,
         required: [true, 'Please add a telephone number'],
-        unique: true,
-        match: [
-            /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/, 
-            'Please add a valid telephone number'
-        ]
+        unique: true
     },
+
     email: {
         type: String,
         required: [true, 'Please add an email'],
@@ -25,17 +24,20 @@ const UserSchema = new mongoose.Schema({
             'Please add a valid email'
         ]
     },
+
     role: {
         type: String,
         enum: ['user', 'admin'],
         default: 'user'
     },
+
     password: {
         type: String,
         required: [true, 'Please add a password'],
         minlength: 6,
         select: false
     },
+
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     createdAt: {

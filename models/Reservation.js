@@ -4,22 +4,35 @@ const ReservationSchema = new mongoose.Schema({
     resDate: {
         type: Date,
         required: true 
-        // in range of co-open time - co-close time***
     },
+
+    startDate: {
+        type: String,
+        required: true
+    },
+
+    endDate: {
+        type: String,
+        required: true
+    },
+
     user: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: true
     },
+
     coworkingSpace: {
         type: mongoose.Schema.ObjectId,
         ref: 'CoworkingSpace',
         required: true
     },
+
     createdAt: {
         type: Date,
         default: Date.now
     }
+
 });
 
 module.exports = mongoose.model('Reservation', ReservationSchema);
