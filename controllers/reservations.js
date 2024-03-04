@@ -1,4 +1,5 @@
 const Reservation = require("../models/Reservation");
+const Room = require("../models/Room");
 const CoworkingSpace = require("../models/CoworkingSpace");
 
 //@desc     Get all Reservations
@@ -9,25 +10,43 @@ exports.getReservations = async (req, res, next) => {
 
   //General users can see only their reservations
   if (req.user.role !== "admin") {
-    query = Reservation.find({ user: req.user.id }).populate({
-      path: "coworking",
-      //   select: "name address tel",
-    });
+    query = Reservation.find({ user: req.user.id }).populate(
+      {
+        path: "coworking",
+        //   select: "name address tel",
+      },
+      {
+        path: "room",
+        //   select: "name address tel",
+      }
+    );
   } else {
     //admin
     if (req.params.coworkingId) {
       console.log(req.params.coworkingId);
       query = Reservation.find({
         coworking: req.params.coworkingId,
-      }).populate({
-        path: "coworking",
-        //   select: "name address tel",
-      });
+      }).populate(
+        {
+          path: "coworking",
+          //   select: "name address tel",
+        },
+        {
+          path: "room",
+          //   select: "name address tel",
+        }
+      );
     } else {
-      query = Reservation.find().populate({
-        path: "coworking",
-        //   select: "name address tel",
-      });
+      query = Reservation.find().populate(
+        {
+          path: "coworking",
+          //   select: "name address tel",
+        },
+        {
+          path: "room",
+          //   select: "name address tel",
+        }
+      );
     }
   }
 
@@ -53,10 +72,16 @@ exports.getReservations = async (req, res, next) => {
 exports.getReservation = async (req, res, next) => {
   try {
     //note : want to show username and room
-    const reservation = await Reservation.findById(req.params.id).populate({
-      path: "coworking",
-      //   select: "name description tel",
-    });
+    const reservation = await Reservation.findById(req.params.id).populate(
+      {
+        path: "coworking",
+        //   select: "name description tel",
+      },
+      {
+        path: "room",
+        //   select: "name address tel",
+      }
+    );
 
     if (!reservation) {
       return res.status(404).json({
@@ -90,6 +115,15 @@ exports.addReservation = async (req, res, next) => {
       return res.status(404).json({
         success: false,
         message: `No coworking with the id of ${req.params.coworkingId}`,
+      });
+    }
+
+    const room = await CoworkingSpace.findById(req.body.room);
+
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: `No room id: ${req.body.room} in Coworking id: ${req.params.coworkingId}`,
       });
     }
 
