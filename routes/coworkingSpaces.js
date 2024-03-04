@@ -37,10 +37,10 @@ const {getCoworkingSpace, getCoworkingSpaces, createCoworkingSpace, updateCowork
  *         tel:
  *           type: string
  *           description: Telephone number
- *         open-time:
+ *         openTime:
  *           type: string
  *           description: CoworkingSpace's open time
- *         close-time:
+ *         closeTime:
  *           type: string
  *           description: CoworkingSpace's close time
  *       example:
