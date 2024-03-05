@@ -159,15 +159,6 @@ exports.addReservation = async (req, res, next) => {
     const closeH = splitTimeE[0]; // Parses the hours part into an integer: 18
     const closeM = splitTimeE[1];
 
-    // // Assuming req.body.startdate is in UTC timezone
-    // const startDate = new Date(req.body.startdate); // Assuming req.body.startdate is '2024-03-12T07:30:00.000+00:00'
-    // const startDateInLocalTimezone = new Date(
-    //   startDate.toLocaleString("en-US", { timeZone: "America/New_York" })
-    // ); // Convert to New York timezone
-
-    // const startH = startDateInLocalTimezone.getHours(); // Should give you the correct hour value in the desired timezone
-    // const startM = startDateInLocalTimezone.getMinutes(); // Should give you the correct minute value in the desired timezone
-
     const startH = new Date(req.body.startdate).getHours();
     const startM = new Date(req.body.startdate).getMinutes();
 
@@ -182,8 +173,6 @@ exports.addReservation = async (req, res, next) => {
     const sumEndTime = parseInt(endH) * 60 * 60 + parseInt(endM) * 60;
     console.log(sumOpenTime, sumCloseTime, sumStartTime, sumEndTime);
 
-    // const [openH, openM] = coworkingSpace.opentime.split(':').map(num => parseInt(num));
-    // const [closeH, closeM] = coworkingSpace.closetime.split(':').map(num => parseInt(num));
     // Check Time
     if (sumStartTime < sumOpenTime) {
       return res.status(400).json({
