@@ -22,11 +22,49 @@ const CoworkingSpaceSchema = new mongoose.Schema(
     opentime: {
       type: String,
       required: [true, "Please add open time"],
+      validate: {
+        validator: function (value) {
+          // Regular expression to match HH:mm format
+          const timePattern = /^(?:2[0-4]|[01]?[0-9]):[0-5][0-9]$/;
+
+          //Check Pattern
+          if (!timePattern.test(value)) {
+            return false;
+          }
+
+          // Extract hours and minutes parts
+          const [hours, minutes] = value.split(":").map(Number);
+
+          // Check if time is less than or equal to 24:00
+          return hours < 24 || (hours === 24 && minutes === 0);
+        },
+        message: (props) =>
+          `${props.value} is not a valid time format (HH:mm) or exceeds 24:00`,
+      },
     },
 
     closetime: {
       type: String,
       required: [true, "Please add close time"],
+      validate: {
+        validator: function (value) {
+          // Regular expression to match HH:mm format
+          const timePattern = /^(?:2[0-4]|[01]?[0-9]):[0-5][0-9]$/;
+
+          //Check Pattern
+          if (!timePattern.test(value)) {
+            return false;
+          }
+
+          // Extract hours and minutes parts
+          const [hours, minutes] = value.split(":").map(Number);
+
+          // Check if time is less than or equal to 24:00
+          return hours < 24 || (hours === 24 && minutes === 0);
+        },
+        message: (props) =>
+          `${props.value} is not a valid time format (HH:mm) or exceeds 24:00`,
+      },
     },
     roomcount: {
       type: Number,
@@ -40,7 +78,7 @@ const CoworkingSpaceSchema = new mongoose.Schema(
 );
 
 // Define a method to calculate room count
-CoworkingSpaceSchema.methods.calculateRoomCount = async function() {
+CoworkingSpaceSchema.methods.calculateRoomCount = async function () {
   try {
     const roomCount = await Room.countDocuments({ coworkingspace: this._id });
     return roomCount;
@@ -50,7 +88,7 @@ CoworkingSpaceSchema.methods.calculateRoomCount = async function() {
   }
 };
 
-CoworkingSpaceSchema.pre("save", async function(next) {
+CoworkingSpaceSchema.pre("save", async function (next) {
   try {
     this.roomcount = await this.calculateRoomCount();
     next();
@@ -58,27 +96,6 @@ CoworkingSpaceSchema.pre("save", async function(next) {
     console.error("Error in pre-save hook:", error);
     next(error); // Pass the error to the next middleware
   }
-});
-
-// Define method to calculate total seconds from time string (e.g., "09:30" => 34200)
-CoworkingSpaceSchema.methods.calculateSecondsFromTime = function(timeString) {
-  const [hours, minutes] = timeString.split(":").map(Number);
-  return hours * 3600 + minutes * 60;
-};
-
-// Define method to check if opening time is before closing time
-CoworkingSpaceSchema.methods.isValidTimeRange = function() {
-  const openSeconds = this.calculateSecondsFromTime(this.opentime);
-  const closeSeconds = this.calculateSecondsFromTime(this.closetime);
-  return openSeconds < closeSeconds;
-};
-
-// Define pre-save hook to check time validity before saving
-CoworkingSpaceSchema.pre("save", function(next) {
-  if (!this.isValidTimeRange()) {
-    return next(new Error("Invalid time range: Opening time must be before closing time"));
-  }
-  next();
 });
 
 //Cascade delete appointments when a hospital is deleted

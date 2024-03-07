@@ -70,7 +70,7 @@ exports.getCoworkingSpaces = async (req, res, next) => {
 
     //Calculate rooms of coworking spaces
     for (const co of coworkingSpaces) {
-      co.roomcount = await co.calculateRoomCount();
+      // co.roomcount = await co.calculateRoomCount();
       await co.save();
     }
 
@@ -98,16 +98,19 @@ exports.getCoworkingSpace = async (req, res, next) => {
     });
 
     if (!coworkingSpace) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
         message: `Couldn't find Coworking Space with id: ${req.params.id}`,
       });
     }
 
+    // coworkingSpace.roomcount = await coworkingSpace.calculateRoomCount();
+    await coworkingSpace.save();
+
     res.status(200).json({ success: true, data: coworkingSpace });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(400).json({ success: false });
   }
 };
 
@@ -116,16 +119,9 @@ exports.getCoworkingSpace = async (req, res, next) => {
 //@access   Private
 exports.createCoworkingSpace = async (req, res, next) => {
   try {
+
     // Create the coworking space
     const coworkingSpace = new CoworkingSpace(req.body);
-
-    // Ensure the time range is valid before creating the coworking space
-    if (!coworkingSpace.isValidTimeRange()) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid time range: Opening time must be before closing time",
-      });
-    }
 
     // Save the coworking space
     await coworkingSpace.save();
@@ -136,10 +132,7 @@ exports.createCoworkingSpace = async (req, res, next) => {
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({
-      success: false,
-      message: "Cannot create Coworking Space",
-    });
+    return res.status(400).json({ success: false });
   }
 };
 
@@ -148,38 +141,23 @@ exports.createCoworkingSpace = async (req, res, next) => {
 //@access   Private
 exports.updateCoworkingSpace = async (req, res, next) => {
   try {
-    const coworkingSpace = await CoworkingSpace.findById(req.params.id);
+    const coworkingSpace = await CoworkingSpace.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!coworkingSpace) {
       return res.status(400).json({
         success: false,
-        msg: `Couldn't find Coworking Space id: ${req.params.id}`,
+        message: `Couldn't find Coworking Space id: ${req.params.id}`,
       });
     }
 
-    // Ensure the time range is valid before updating
-    if (!coworkingSpace.isValidTimeRange()) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid time range: Opening time must be before closing time",
-      });
-    }
-
-    // Update the coworking space
-    await coworkingSpace.updateOne(req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    // Fetch the updated coworking space after the update
-    const updatedCoworkingSpace = await CoworkingSpace.findById(req.params.id);
-
-    // Calculate the room count and update the roomcount field
-    const roomCount = await updatedCoworkingSpace.calculateRoomCount();
-    updatedCoworkingSpace.roomcount = roomCount;
-    await updatedCoworkingSpace.save();
-
-    res.status(200).json({ success: true, data: updatedCoworkingSpace });
+    res.status(200).json({ success: true, data: coworkingSpace });
   } catch (err) {
     res.status(400).json({ success: false });
   }
@@ -200,6 +178,7 @@ exports.deleteCoworkingSpace = async (req, res, next) => {
     }
 
     await coworkingSpace.deleteOne();
+
     res.status(200).json({ success: true, data: {} });
   } catch (err) {
     res.status(400).json({ success: false });
