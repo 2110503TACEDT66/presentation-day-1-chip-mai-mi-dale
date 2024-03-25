@@ -24,9 +24,7 @@ exports.getCoworkingSpaces = async (req, res, next) => {
   );
 
   //finding resource
-  query = CoworkingSpace.find(JSON.parse(queryStr))
-    .populate("reservations")
-    .populate("rooms");
+  query = CoworkingSpace.find(JSON.parse(queryStr));
 
   //Select Fields
   if (req.query.select) {
@@ -43,7 +41,7 @@ exports.getCoworkingSpaces = async (req, res, next) => {
 
   //Pagination
   const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 25;
+  const limit = parseInt(req.query.limit, 10) || 5;
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;
 
@@ -70,6 +68,12 @@ exports.getCoworkingSpaces = async (req, res, next) => {
       };
     }
 
+    //Calculate rooms of coworking spaces
+    for (const co of coworkingSpaces) {
+      // co.roomcount = await co.calculateRoomCount();
+      await co.save();
+    }
+
     res.status(200).json({
       success: true,
       count: coworkingSpaces.length,
@@ -86,16 +90,26 @@ exports.getCoworkingSpaces = async (req, res, next) => {
 //@access   Public
 exports.getCoworkingSpace = async (req, res, next) => {
   try {
-    const coworkingSpace = await CoworkingSpace.findById(req.params.id)
-      .populate("reservations")
-      .populate("rooms");
+    const coworkingSpace = await CoworkingSpace.findById(
+      req.params.id
+    ).populate({
+      path: "rooms",
+      select: "name capacity -coworkingspace",
+    });
 
     if (!coworkingSpace) {
-      return res.status(400).json({ success: false });
+      return res.status(400).json({
+        success: false,
+        message: `Couldn't find Coworking Space with id: ${req.params.id}`,
+      });
     }
+
+    // coworkingSpace.roomcount = await coworkingSpace.calculateRoomCount();
+    await coworkingSpace.save();
 
     res.status(200).json({ success: true, data: coworkingSpace });
   } catch (err) {
+    console.error(err);
     res.status(400).json({ success: false });
   }
 };
@@ -104,11 +118,22 @@ exports.getCoworkingSpace = async (req, res, next) => {
 //@route    POST /api/v1/coworkingSpaces
 //@access   Private
 exports.createCoworkingSpace = async (req, res, next) => {
-  const coworkingSpace = await CoworkingSpace.create(req.body);
-  res.status(201).json({
-    success: true,
-    data: coworkingSpace,
-  });
+  try {
+
+    // Create the coworking space
+    const coworkingSpace = new CoworkingSpace(req.body);
+
+    // Save the coworking space
+    await coworkingSpace.save();
+
+    res.status(201).json({
+      success: true,
+      data: coworkingSpace,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).json({ success: false });
+  }
 };
 
 //@desc     Update single co-working space
@@ -126,7 +151,10 @@ exports.updateCoworkingSpace = async (req, res, next) => {
     );
 
     if (!coworkingSpace) {
-      return res.status(400).json({ success: false });
+      return res.status(400).json({
+        success: false,
+        message: `Couldn't find Coworking Space id: ${req.params.id}`,
+      });
     }
 
     res.status(200).json({ success: true, data: coworkingSpace });
@@ -143,15 +171,14 @@ exports.deleteCoworkingSpace = async (req, res, next) => {
     const coworkingSpace = await CoworkingSpace.findById(req.params.id);
 
     if (!coworkingSpace) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: `Bootcamp not found with id of ${req.params.id}`,
-        });
+      return res.status(400).json({
+        success: false,
+        message: `Couldn't find Coworking Space id: ${req.params.id}`,
+      });
     }
 
     await coworkingSpace.deleteOne();
+
     res.status(200).json({ success: true, data: {} });
   } catch (err) {
     res.status(400).json({ success: false });

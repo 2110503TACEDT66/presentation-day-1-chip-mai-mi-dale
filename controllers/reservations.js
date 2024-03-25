@@ -131,17 +131,16 @@ exports.addReservation = async (req, res, next) => {
         message: `No coworking with the id of ${req.params.coworkingSpaceId}`,
       });
     }
-    
-    
+
     const room = await Room.findById(req.body.room);
-    
+
     if (!room) {
       return res.status(404).json({
         success: false,
         message: `No room id: ${req.body.room} in Coworking id: ${req.params.coworkingSpaceId}`,
       });
     }
-    
+
     if (room.capacity < req.body.people) {
       return res.status(400).json({
         success: false,
@@ -149,35 +148,46 @@ exports.addReservation = async (req, res, next) => {
       });
     }
 
-    // const splitTimeS = coworkingSpace.opentime.split(":"); // Splits the opentime string into ["09", "30"]
-    // const openH = parseInt(splitTimeS[0]); // Parses the hours part into an integer: 9
-    // const openM = parseInt(splitTimeS[1]);
+    // const dateString = coworkingSpace;
+    // console.log(dateString.closetime);
 
-    // const splitTimeE = coworkingSpace.closetime.split(":"); // Splits the closetime string into ["18", "00"]
-    // const closeH = parseInt(splitTimeE[0]); // Parses the hours part into an integer: 18
-    // const closeM = parseInt(splitTimeE[1]);
+    const splitTimeS = coworkingSpace.opentime.split(":"); // Splits the opentime string into ["09", "30"]
+    const openH = splitTimeS[0]; // Parses the hours part into an integer: 9
+    const openM = splitTimeS[1];
 
-    // const startH = new Date(req.body.startdate).getHours();
-    // const startM = new Date(req.body.startdate).getMinutes();
-    // const endH = new Date(req.body.enddate).getHours();
-    // const endM = new Date(req.body.enddate).getMinutes();
-    // const [openH, openM] = coworkingSpace.opentime.split(':').map(num => parseInt(num));
-    // const [closeH, closeM] = coworkingSpace.closetime.split(':').map(num => parseInt(num));
+    const splitTimeE = coworkingSpace.closetime.split(":"); // Splits the closetime string into ["18", "00"]
+    const closeH = splitTimeE[0]; // Parses the hours part into an integer: 18
+    const closeM = splitTimeE[1];
+
+    const startH = new Date(req.body.startdate).getHours();
+    const startM = new Date(req.body.startdate).getMinutes();
+
+    const endH = new Date(req.body.enddate).getHours();
+    const endM = new Date(req.body.enddate).getMinutes();
+
+    console.log(openH, openM, closeH, closeM, startH, startM, endH, endM);
+
+    const sumOpenTime = parseInt(openH) * 60 * 60 + parseInt(openM) * 60;
+    const sumCloseTime = parseInt(closeH) * 60 * 60 + parseInt(closeM) * 60;
+    const sumStartTime = parseInt(startH) * 60 * 60 + parseInt(startM) * 60;
+    const sumEndTime = parseInt(endH) * 60 * 60 + parseInt(endM) * 60;
+    console.log(sumOpenTime, sumCloseTime, sumStartTime, sumEndTime);
+
     // Check Time
-    // if (startH < openH) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: `Unavailable time`,
-    //   });
-    // }
+    if (sumStartTime < sumOpenTime) {
+      return res.status(400).json({
+        success: false,
+        message: `Unavailable time`,
+      });
+    }
 
-    // if (endH > closeH) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: `Unavailable time`,
-    //   });
-    // }
-    
+    if (sumEndTime > sumCloseTime) {
+      return res.status(400).json({
+        success: false,
+        message: `Unavailable time`,
+      });
+    }
+
     //add user Id to req.body
     req.body.user = req.user.id;
     //Check for existed reservation
@@ -229,7 +239,7 @@ exports.updateReservation = async (req, res, next) => {
         message: `User ${req.user.id} is not authorized to update this reservation`,
       });
     }
-    
+
     reservation = await Reservation.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
