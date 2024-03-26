@@ -10,7 +10,10 @@ const CoworkingSpaceSchema = new mongoose.Schema(
       trim: true,
       maxlength: [100, "Name can not be more than 100 characters"],
     },
-
+    picture: {
+      type: String,
+      required: false,
+    },
     address: {
       type: String,
       required: [true, "Please add an address"],
