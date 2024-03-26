@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "name": "co-working-space-booking",
+    "build": [
+        {
+            "src": "server.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "route": [
+        {
+            "src":"/(.*)",
+            "dest": "server.js"
+        }
+    ]
+
+}
