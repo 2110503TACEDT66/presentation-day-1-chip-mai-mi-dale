@@ -7,6 +7,10 @@ const RoomSchema = new mongoose.Schema(
       required: [true, "Please add a room's name"],
       unique: true,
     },
+    picture: {
+      type: String,
+      required: false,
+    },
     coworkingspace: {
       type: mongoose.Schema.ObjectId,
       ref: "CoworkingSpace",
