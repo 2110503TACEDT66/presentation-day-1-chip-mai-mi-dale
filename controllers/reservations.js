@@ -150,43 +150,42 @@ exports.addReservation = async (req, res, next) => {
 
     // const dateString = coworkingSpace;
     // console.log(dateString.closetime);
+    // const splitTimeS = coworkingSpace.opentime.split(":"); // Splits the opentime string into ["09", "30"]
+    // const openH = splitTimeS[0]; // Parses the hours part into an integer: 9
+    // const openM = splitTimeS[1];
 
-    const splitTimeS = coworkingSpace.opentime.split(":"); // Splits the opentime string into ["09", "30"]
-    const openH = splitTimeS[0]; // Parses the hours part into an integer: 9
-    const openM = splitTimeS[1];
+    // const splitTimeE = coworkingSpace.closetime.split(":"); // Splits the closetime string into ["18", "00"]
+    // const closeH = splitTimeE[0]; // Parses the hours part into an integer: 18
+    // const closeM = splitTimeE[1];
 
-    const splitTimeE = coworkingSpace.closetime.split(":"); // Splits the closetime string into ["18", "00"]
-    const closeH = splitTimeE[0]; // Parses the hours part into an integer: 18
-    const closeM = splitTimeE[1];
+    // const startH = new Date(req.body.startdate).getHours();
+    // const startM = new Date(req.body.startdate).getMinutes();
 
-    const startH = new Date(req.body.startdate).getHours();
-    const startM = new Date(req.body.startdate).getMinutes();
+    // const endH = new Date(req.body.enddate).getHours();
+    // const endM = new Date(req.body.enddate).getMinutes();
 
-    const endH = new Date(req.body.enddate).getHours();
-    const endM = new Date(req.body.enddate).getMinutes();
+    // console.log(openH, openM, closeH, closeM, startH, startM, endH, endM);
 
-    console.log(openH, openM, closeH, closeM, startH, startM, endH, endM);
+    // const sumOpenTime = parseInt(openH) * 60 * 60 + parseInt(openM) * 60;
+    // const sumCloseTime = parseInt(closeH) * 60 * 60 + parseInt(closeM) * 60;
+    // const sumStartTime = parseInt(startH) * 60 * 60 + parseInt(startM) * 60;
+    // const sumEndTime = parseInt(endH) * 60 * 60 + parseInt(endM) * 60;
+    // console.log(sumOpenTime, sumCloseTime, sumStartTime, sumEndTime);
 
-    const sumOpenTime = parseInt(openH) * 60 * 60 + parseInt(openM) * 60;
-    const sumCloseTime = parseInt(closeH) * 60 * 60 + parseInt(closeM) * 60;
-    const sumStartTime = parseInt(startH) * 60 * 60 + parseInt(startM) * 60;
-    const sumEndTime = parseInt(endH) * 60 * 60 + parseInt(endM) * 60;
-    console.log(sumOpenTime, sumCloseTime, sumStartTime, sumEndTime);
+    // // Check Time
+    // if (sumStartTime < sumOpenTime) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: `Unavailable time`,
+    //   });
+    // }
 
-    // Check Time
-    if (sumStartTime < sumOpenTime) {
-      return res.status(400).json({
-        success: false,
-        message: `Unavailable time`,
-      });
-    }
-
-    if (sumEndTime > sumCloseTime) {
-      return res.status(400).json({
-        success: false,
-        message: `Unavailable time`,
-      });
-    }
+    // if (sumEndTime > sumCloseTime) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: `Unavailable time`,
+    //   });
+    // }
 
     //add user Id to req.body
     req.body.user = req.user.id;
